@@ -1,0 +1,200 @@
+[
+  {
+    "login": "Nicole Stackoski",
+    "senha": "$2b$10$bGRDbV6d54QyLE/aNPfAg.iTNLGiljiuQtCnFsJlYoTkzLjV2yTRq",
+    "tipo": "colaborador",
+    "cargo": "adm"
+  },
+  {
+    "login": "Greicy",
+    "senha": null,
+    "tipo": "colaborador",
+    "cargo": "analista"
+  },
+  {
+    "login": "Priscila De Faveri",
+    "senha": "$2b$10$gquoVfMJcnomkSOl9W.zZeW.6eaqaNufqxSj/7sfyPQxlQ6Ef9c.O",
+    "tipo": "master",
+    "cargo": "gestor"
+  },
+  {
+    "login": "Francine",
+    "senha": null,
+    "tipo": "colaborador",
+    "cargo": "adm"
+  },
+  {
+    "login": "Suelen",
+    "senha": null,
+    "tipo": "colaborador",
+    "cargo": "analista"
+  },
+  {
+    "login": "Tatiane",
+    "senha": "$2b$10$0G5HZA64C3fVFSut74J9z.SzDAomd7NpHZHuY9uSQLytiFaLwVwim",
+    "tipo": "master",
+    "cargo": "gestor"
+  },
+  {
+    "login": "Josiani",
+    "senha": null,
+    "tipo": "colaborador",
+    "cargo": "adm"
+  },
+  {
+    "login": "Alini",
+    "senha": null,
+    "tipo": "colaborador",
+    "cargo": "adm"
+  },
+  {
+    "login": "Dayanne",
+    "senha": null,
+    "tipo": "colaborador",
+    "cargo": "adm"
+  },
+  {
+    "login": "Walkiria",
+    "senha": null,
+    "tipo": "colaborador",
+    "cargo": "adm"
+  },
+  {
+    "login": "Sarah",
+    "senha": null,
+    "tipo": "colaborador",
+    "cargo": "adm"
+  },
+  {
+    "login": "Cristiane",
+    "senha": null,
+    "tipo": "colaborador",
+    "cargo": "adm"
+  },
+  {
+    "login": "Cristiani",
+    "senha": null,
+    "tipo": "colaborador",
+    "cargo": "adm"
+  },
+  {
+    "login": "Luciana Loh",
+    "senha": null,
+    "tipo": "colaborador",
+    "cargo": "adm"
+  },
+  {
+    "login": "Luciana Belgues",
+    "senha": null,
+    "tipo": "colaborador",
+    "cargo": "adm"
+  },
+  {
+    "login": "Luiza Cancelier",
+    "senha": null,
+    "tipo": "colaborador",
+    "cargo": "adm"
+  },
+  {
+    "login": "Luiza Coelho",
+    "senha": null,
+    "tipo": "colaborador",
+    "cargo": "adm"
+  },
+  {
+    "login": "Lara",
+    "senha": null,
+    "tipo": "colaborador",
+    "cargo": "adm"
+  },
+  {
+    "login": "Jessica",
+    "senha": null,
+    "tipo": "colaborador",
+    "cargo": "analista"
+  },
+  {
+    "login": "Carina",
+    "senha": null,
+    "tipo": "colaborador",
+    "cargo": "analista"
+  },
+  {
+    "login": "Priscila Ferro",
+    "senha": null,
+    "tipo": "colaborador",
+    "cargo": "analista"
+  },
+  {
+    "login": "Aline",
+    "senha": null,
+    "tipo": "colaborador",
+    "cargo": "analista"
+  },
+  {
+    "login": "Madisson",
+    "senha": null,
+    "tipo": "colaborador",
+    "cargo": "gestor"
+  },
+  {
+    "login": "Erica",
+    "senha": null,
+    "tipo": "colaborador",
+    "cargo": "adm"
+  },
+  {
+    "login": "Heloisa",
+    "senha": null,
+    "tipo": "colaborador",
+    "cargo": "analista"
+  },
+  {
+    "login": "Micaela",
+    "senha": null,
+    "tipo": "colaborador",
+    "cargo": "adm"
+  },
+  {
+    "login": "Camila",
+    "senha": null,
+    "tipo": "colaborador",
+    "cargo": "adm"
+  },
+  {
+    "login": "Jaline",
+    "senha": null,
+    "tipo": "colaborador",
+    "cargo": "adm"
+  },
+  {
+    "login": "George",
+    "senha": null,
+    "tipo": "colaborador",
+    "cargo": "analista"
+  },
+  {
+    "login": "Gabriela",
+    "senha": null,
+    "tipo": "colaborador",
+    "cargo": "analista"
+  },
+  {
+    "login": "Suzana",
+    "senha": null,
+    "tipo": "colaborador",
+    "cargo": "analista"
+  },
+  {
+    "login": "Laiza",
+    "senha": null,
+    "tipo": "colaborador",
+    "cargo": "adm"
+  },
+  {
+    "login": "Emanuelli",
+    "senha": null,
+    "tipo": "colaborador",
+    "cargo": "adm"
+  }
+]

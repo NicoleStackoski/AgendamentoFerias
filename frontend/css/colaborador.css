@@ -1,0 +1,162 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #ffffff;
+}
+
+.container {
+  display: flex;
+  height: 100vh;
+}
+
+.sidebar {
+  width: 240px;
+  background: #d9d9d9;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.user-label {
+  font-weight: bold;
+  margin-bottom: 30px;
+}
+
+.menu-btn {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 20px;
+  background: #656565;
+  border: none;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.menu-btn:hover {
+  background: #4c4c4c;
+}
+
+.main-content {
+  flex: 1;
+  padding: 25px;
+}
+
+.page-title {
+  text-align: center;
+  font-size: 26px;
+  margin-bottom: 25px;
+}
+
+.selectors {
+  display: flex;
+  justify-content: center;
+  gap: 25px;
+  margin-bottom: 30px;
+}
+
+select {
+  padding: 12px;
+  width: 180px;
+  background: #c2c2c2;
+  border: none;
+  border-radius: 6px;
+}
+
+.calendar-container {
+  display: flex;
+  justify-content: center;
+}
+
+table {
+  border-collapse: collapse;
+  width: 80%;
+}
+
+th, td {
+  text-align: center;
+  padding: 15px;
+  font-size: 16px;
+  border: 2px solid #3c3c3c;
+}
+
+td {
+  cursor: pointer;
+}
+
+td.selecionado {
+  background: #a4c6ff;
+}
+
+td.bloqueado {
+  background: #ff8585;
+  cursor: not-allowed;
+}
+
+#observacao {
+  width: 80%;
+  margin: 30px auto;
+  display: block;
+  padding: 15px;
+  height: 80px;
+  border-radius: 6px;
+  border: 1px solid #999;
+}
+
+.salvar-btn {
+  margin: 10px auto;
+  display: block;
+  width: 200px;
+  padding: 12px;
+  background: #2d2d2d;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.salvar-btn:hover {
+  opacity: 0.8;
+}
+
+.custom-select {
+  width: 200px;
+  padding: 12px;
+  background: #c2c2c2;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+}
+
+.custom-select.open {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.options {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: #c2c2c2;
+  border-radius: 0 0 6px 6px;
+  max-height: 150px;
+  overflow-y: auto;
+  z-index: 10;
+}
+
+.custom-select.open .options {
+  display: block;
+}
+
+.options div {
+  padding: 10px;
+}
+
+.options div:hover {
+  background: #b0b0b0;
+}
+
+.options div.selected {
+  background: #9fbaff;
+}

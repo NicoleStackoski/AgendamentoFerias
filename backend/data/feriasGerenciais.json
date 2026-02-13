@@ -1,0 +1,23 @@
+[
+  {
+    "id": "2e4c29bc-f5aa-452d-8fee-e06a70e7117d",
+    "gerente": "Jaqueline",
+    "dataInicio": "2026-04-10",
+    "dataFim": "2026-04-26",
+    "filial": [
+      "RS"
+    ],
+    "canal": [
+      "Revenda",
+      "Engenharia"
+    ],
+    "marca": [
+      "Eliane",
+      "Elizabeth"
+    ],
+    "cobertura": [
+      "Matheus"
+    ],
+    "observacao": "dvuevdu"
+  }
+]
