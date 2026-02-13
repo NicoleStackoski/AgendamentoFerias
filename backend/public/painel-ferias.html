@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel de Férias</title>
+
+
+  <link rel="stylesheet" href="/backend/public/css/painel.css">
+</head>
+
+<body>
+  <div class="container">
+
+
+    <aside class="sidebar">
+      <p class="user-label">Olá, usuário</p>
+
+      <button class="menu-btn" id="btnAgendar">
+        Agendar férias
+      </button>
+
+      <button class="menu-btn" id="btnPainel">
+        Ver painel de férias
+      </button>
+
+      <button
+        class="menu-btn"
+        id="btnFeriasGerencial"
+        onclick="location.href='ferias-gerenciais.html'"
+      >
+        Férias Gerencial
+      </button>
+
+
+      <button
+        class="menu-btn"
+        id="btnLiberarPortal"
+        style="display: none;"
+      >
+        Liberar Portal
+      </button>
+    </aside>
+
+
+    <main class="main-content">
+      <h2 class="page-title">Ver painel de férias</h2>
+
+  
+      <div class="filtros">
+        <select id="mesFiltro">
+          <option value="">mês</option>
+        </select>
+
+        <select id="anoFiltro">
+          <option value="">ano</option>
+        </select>
+      </div>
+
+
+      <table class="tabela">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>DATA SOLICITAÇÃO</th>
+            <th>NOME</th>
+            <th>DATA INICIAL</th>
+            <th>DATA FINAL</th>
+            <th>COBERTURA</th>
+            <th>OBSERVAÇÃO</th>
+            <th>STATUS</th>
+            <th>AÇÕES</th>
+          </tr>
+        </thead>
+
+        <tbody id="tabelaCorpo"></tbody>
+      </table>
+    </main>
+  </div>
+
+  <div id="modalRejeicao" class="modal hidden">
+    <div class="modal-content">
+      <h3>Férias rejeitadas</h3>
+      <p id="textoMotivo"></p>
+      <button id="btnFecharModal" class="menu-btn">
+        Fechar
+      </button>
+    </div>
+  </div>
+
+
+  <script src="js/painel.js"></script>
+</body>
+</html>

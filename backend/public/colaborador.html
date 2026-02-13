@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel do Colaborador</title>
+
+  <link rel="stylesheet" href="css/colaborador.css">
+</head>
+
+<body>
+  <div class="container">
+
+
+    <aside class="sidebar">
+      <p class="user-label">Olá, usuário</p>
+
+      <button id="btnAgendar" class="menu-btn">
+        Agendar férias
+      </button>
+
+      <button id="btnVerPainel" class="menu-btn">
+        Ver painel de férias
+      </button>
+
+      <button class="menu-btn" onclick="location.href='ferias-gerenciais.html'">
+  Férias Gerencial
+</button>
+
+
+      <button
+        id="btnLiberarPortal"
+        class="menu-btn"
+        style="display: none;"
+      >
+        Liberar Portal
+      </button>
+    </aside>
+
+
+    <main class="main-content">
+      <h2 class="page-title">Agendar férias:</h2>
+
+      <div class="selectors">
+
+        <select id="mesSelect">
+          <option value="">mês</option>
+        </select>
+
+        <select id="anoSelect">
+          <option value="">ano</option>
+        </select>
+
+    
+        <div class="custom-select" id="coberturaBox">
+          <span id="coberturaLabel">Selecione quem vai cobrir</span>
+          <div class="options" id="coberturaOptions"></div>
+        </div>
+      </div>
+
+
+      <div class="calendar-container">
+        <table id="calendarTable">
+          <thead>
+            <tr>
+              <th>DOMINGO</th>
+              <th>SEGUNDA</th>
+              <th>TERÇA</th>
+              <th>QUARTA</th>
+              <th>QUINTA</th>
+              <th>SEXTA</th>
+              <th>SÁBADO</th>
+            </tr>
+          </thead>
+          <tbody id="calendarBody"></tbody>
+        </table>
+      </div>
+
+
+      <textarea
+        id="observacao"
+        placeholder="Digite uma observação (opcional)..."
+      ></textarea>
+
+      <button id="btnSalvar" class="salvar-btn">
+        Salvar férias
+      </button>
+    </main>
+  </div>
+
+
+  <script src="js/colaborador.js"></script>
+</body>
+</html>

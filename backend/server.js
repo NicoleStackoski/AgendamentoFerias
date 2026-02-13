@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const path = require("path"); // Adicionado para servir arquivos estáticos
 
 const app = express();
 
@@ -7,12 +8,15 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Rota raiz para teste
+// Servir o frontend (HTML, CSS, JS) da pasta public
+app.use(express.static(path.join(__dirname, "public")));
+
+// Rota raiz - abre o index.html
 app.get("/", (req, res) => {
-  res.send("Backend rodando certinho no Render! 🚀");
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// Rotas
+// Rotas do backend
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const feriasRoutes = require("./routes/feriasRoutes");
