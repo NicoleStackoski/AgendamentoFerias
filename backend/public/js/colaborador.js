@@ -1,3 +1,5 @@
+// URL pública do Render
+const BASE_URL = "https://agendamentoferias.onrender.com";
 
 let dataInicio = null;
 let dataFim = null;
@@ -21,20 +23,16 @@ if (!usuarioLogado) {
 
 document.querySelector(".user-label").textContent = `Olá, ${usuarioLogado}`;
 
-
 const meses = [
-  "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-  "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+  "Janeiro","Fevereiro","Março","Abril","Maio","Junho",
+  "Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"
 ];
 
 const mesSelect = document.getElementById("mesSelect");
 const anoSelect = document.getElementById("anoSelect");
-
 const coberturaBox = document.getElementById("coberturaBox");
 const coberturaLabel = document.getElementById("coberturaLabel");
 const coberturaOptions = document.getElementById("coberturaOptions");
-
-
 const btnLiberarPortal = document.getElementById("btnLiberarPortal");
 
 if (tipoUsuario === "master" && btnLiberarPortal) {
@@ -43,16 +41,18 @@ if (tipoUsuario === "master" && btnLiberarPortal) {
     window.location.href = "liberar-portal.html";
 }
 
+// Verifica se o portal está liberado
 async function verificarLiberacao() {
-  const res = await fetch("http://localhost:3000/liberar");
+  const res = await fetch(`${BASE_URL}/liberar`);
   const liberados = await res.json();
   portalLiberado = liberados.some(l => l.usuario === usuarioLogado);
 }
 
 verificarLiberacao();
 
+// Carrega todos os usuários para seleção de cobertura
 async function carregarUsuarios() {
-  const res = await fetch("http://localhost:3000/users");
+  const res = await fetch(`${BASE_URL}/users`);
   const lista = await res.json();
 
   coberturaOptions.innerHTML = "";
@@ -98,13 +98,10 @@ coberturaBox.onclick = e => {
 
 document.onclick = () => coberturaBox.classList.remove("open");
 
-meses.forEach((m, i) => {
-  mesSelect.innerHTML += `<option value="${i}">${m}</option>`;
-});
+// Popula selects de mês e ano
+meses.forEach((m, i) => mesSelect.innerHTML += `<option value="${i}">${m}</option>`);
+for (let ano = 2024; ano <= 2035; ano++) anoSelect.innerHTML += `<option value="${ano}">${ano}</option>`;
 
-for (let ano = 2024; ano <= 2035; ano++) {
-  anoSelect.innerHTML += `<option value="${ano}">${ano}</option>`;
-}
 mesSelect.onchange = gerarCalendario;
 anoSelect.onchange = gerarCalendario;
 
@@ -122,9 +119,7 @@ function gerarCalendario() {
 
   let linha = document.createElement("tr");
 
-  for (let i = 0; i < primeiroDia; i++) {
-    linha.appendChild(document.createElement("td"));
-  }
+  for (let i = 0; i < primeiroDia; i++) linha.appendChild(document.createElement("td"));
 
   for (let dia = 1; dia <= totalDias; dia++) {
     if (linha.children.length === 7) {
@@ -141,10 +136,10 @@ function gerarCalendario() {
   tbody.appendChild(linha);
   marcarUltimaSemana();
 }
+
 function marcarUltimaSemana() {
   const linhas = document.querySelectorAll("#calendarBody tr");
-  linhas[linhas.length - 1]
-    .querySelectorAll("td")
+  linhas[linhas.length - 1].querySelectorAll("td")
     .forEach(td => td.textContent && td.classList.add("ultima-semana"));
 }
 
@@ -153,11 +148,6 @@ function selecionarDia(td) {
   if (!dia) return;
 
   const data = new Date(anoAtual, mesAtual, dia);
-
-  /*if (!portalLiberado && !dataInicio && td.classList.contains("ultima-semana")) {
-    alert("Não é permitido iniciar férias na última semana.");
-    return;
-  }*/
 
   if (!dataInicio) {
     dataInicio = data;
@@ -196,15 +186,14 @@ function marcarIntervalo() {
 function limparSelecao() {
   dataInicio = null;
   dataFim = null;
-  document.querySelectorAll(".selecionado").forEach(td =>
-    td.classList.remove("selecionado")
-  );
+  document.querySelectorAll(".selecionado").forEach(td => td.classList.remove("selecionado"));
 }
 
+// Salvar férias
 document.getElementById("btnSalvar").onclick = async () => {
   if (!dataInicio || !dataFim) return alert("Selecione o período.");
 
-  await fetch("http://localhost:3000/ferias", {
+  await fetch(`${BASE_URL}/ferias`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -219,7 +208,10 @@ document.getElementById("btnSalvar").onclick = async () => {
 
   alert("Férias cadastradas!");
   limparSelecao();
+  // Atualiza o painel
+  window.location.href = "painel-ferias.html";
 };
 
+// Botão para ver painel
 document.getElementById("btnVerPainel").onclick = () =>
   window.location.href = "painel-ferias.html";
