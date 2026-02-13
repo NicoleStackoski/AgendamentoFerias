@@ -3,10 +3,14 @@ const cors = require("cors");
 
 const app = express();
 
-//MIDDLEWARES
-
+// MIDDLEWARES
 app.use(cors());
 app.use(express.json());
+
+// Rota raiz para teste
+app.get("/", (req, res) => {
+  res.send("Backend rodando certinho no Render! 🚀");
+});
 
 // Rotas
 const authRoutes = require("./routes/authRoutes");
