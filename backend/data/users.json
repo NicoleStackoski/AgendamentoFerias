@@ -13,7 +13,7 @@
   },
   {
     "login": "Priscila De Faveri",
-    "senha": "$2b$10$gquoVfMJcnomkSOl9W.zZeW.6eaqaNufqxSj/7sfyPQxlQ6Ef9c.O",
+    "senha": null,
     "tipo": "master",
     "cargo": "gestor"
   },
@@ -31,7 +31,7 @@
   },
   {
     "login": "Tatiane",
-    "senha": "$2b$10$0G5HZA64C3fVFSut74J9z.SzDAomd7NpHZHuY9uSQLytiFaLwVwim",
+    "senha": null,
     "tipo": "master",
     "cargo": "gestor"
   },
