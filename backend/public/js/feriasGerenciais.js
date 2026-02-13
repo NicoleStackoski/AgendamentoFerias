@@ -1,4 +1,5 @@
-const API = "http://localhost:3000/ferias-gerenciais";
+const BASE_URL = "https://agendamentoferias.onrender.com"; // URL pública do Render
+const API = `${BASE_URL}/ferias-gerenciais`;
 
 const usuarioLogado =
   localStorage.getItem("usuarioLogado") ||
@@ -22,7 +23,6 @@ if (btnLiberarPortal && tipoUsuario === "master") {
     window.location.href = "liberar-portal.html";
 }
 
-
 const meses = [
   "Janeiro","Fevereiro","Março","Abril","Maio","Junho",
   "Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"
@@ -38,15 +38,11 @@ const gerente = document.getElementById("gerente");
 const observacao = document.getElementById("observacao");
 const btnSalvar = document.getElementById("salvar");
 
-
 let inicio = null;
 let fim = null;
 
 let dropdownValues = {
-  filial: [],
-  canal: [],
-  marca: [],
-  cobertura: []
+  filial: [], canal: [], marca: [], cobertura: []
 };
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -79,7 +75,6 @@ function initSelects() {
   filtroAno.onchange = carregarTabela;
 }
 
-
 function resetCalendar() {
   inicio = null;
   fim = null;
@@ -103,8 +98,7 @@ function renderCalendar() {
     const data = formatDate(d);
 
     if (data === inicio || data === fim) div.classList.add("selected");
-    if (inicio && fim && data > inicio && data < fim)
-      div.classList.add("range");
+    if (inicio && fim && data > inicio && data < fim) div.classList.add("range");
 
     div.onclick = () => selecionarDia(data);
     calendar.appendChild(div);
@@ -128,7 +122,6 @@ function selecionarDia(data) {
 function formatDate(d) {
   return `${ano.value}-${String(+mes.value + 1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
 }
-
 
 function initDropdowns() {
   document.querySelectorAll(".dropdown").forEach(drop => {
@@ -158,10 +151,8 @@ function initDropdowns() {
 }
 
 function fecharDropdowns() {
-  document.querySelectorAll(".dropdown-options")
-    .forEach(d => d.style.display = "none");
+  document.querySelectorAll(".dropdown-options").forEach(d => d.style.display = "none");
 }
-
 
 btnSalvar.onclick = async () => {
   if (!gerente.value || !inicio || !fim) {
@@ -186,7 +177,6 @@ btnSalvar.onclick = async () => {
   observacao.value = "";
   carregarTabela();
 };
-
 
 async function carregarTabela() {
   const res = await fetch(API);
@@ -226,7 +216,6 @@ async function carregarTabela() {
   });
 }
 
-
 document.addEventListener("click", async e => {
   if (!e.target.classList.contains("btn-trash")) return;
 
@@ -244,7 +233,6 @@ document.addEventListener("click", async e => {
 
   carregarTabela();
 });
-
 
 function formatar(data) {
   if (!data) return "";

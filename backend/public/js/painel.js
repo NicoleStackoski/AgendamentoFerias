@@ -1,3 +1,4 @@
+const BASE_URL = "https://agendamentoferias.onrender.com"; // URL pública do Render
 
 const usuario =
   localStorage.getItem("usuarioLogado") ||
@@ -21,13 +22,11 @@ if (tipoUsuario === "master" && btnLiberarPortal) {
     window.location.href = "liberar-portal.html";
 }
 
-
 document.getElementById("btnAgendar").onclick = () =>
   window.location.href = "colaborador.html";
 
 document.getElementById("btnPainel").onclick = () =>
   window.location.href = "painel-ferias.html";
-
 
 const meses = [
   "Janeiro","Fevereiro","Março","Abril","Maio","Junho",
@@ -48,7 +47,7 @@ for (let a = 2024; a <= 2035; a++) {
 let listaOriginal = [];
 
 async function carregarFerias() {
-  const res = await fetch("http://localhost:3000/ferias");
+  const res = await fetch(`${BASE_URL}/ferias`);
   listaOriginal = await res.json();
   aplicarFiltro();
 }
@@ -81,9 +80,7 @@ function mostrarFerias(lista) {
   lista.forEach((item, index) => {
     const statusHTML =
       item.status === "rejeitada"
-        ? `<span class="status-rejeitado" data-motivo="${item.motivoRejeicao}">
-             ❌ Rejeitada
-           </span>`
+        ? `<span class="status-rejeitado" data-motivo="${item.motivoRejeicao}">❌ Rejeitada</span>`
         : `<span class="status-pendente">⏳ Pendente</span>`;
 
     const podeExcluir = item.login === usuario;
@@ -107,9 +104,7 @@ function mostrarFerias(lista) {
           }
           ${
             podeExcluir
-              ? `<button class="btn-excluir" data-id="${item.id}">
-                   <img src="img/lixo.svg">
-                 </button>`
+              ? `<button class="btn-excluir" data-id="${item.id}"><img src="img/lixo.svg"></button>`
               : ""
           }
         </td>
@@ -117,7 +112,6 @@ function mostrarFerias(lista) {
     `;
   });
 
-  
   document.querySelectorAll(".status-rejeitado").forEach(el => {
     el.onclick = () => {
       document.getElementById("textoMotivo").textContent =
@@ -129,13 +123,12 @@ function mostrarFerias(lista) {
   document.getElementById("btnFecharModal").onclick = () =>
     document.getElementById("modalRejeicao").classList.add("hidden");
 
-  
   document.querySelectorAll(".btn-excluir").forEach(btn => {
     btn.onclick = async () => {
       if (!confirm("Excluir férias?")) return;
 
       await fetch(
-        `http://localhost:3000/ferias/${btn.dataset.id}?usuario=${usuario}`,
+        `${BASE_URL}/ferias/${btn.dataset.id}?usuario=${usuario}`,
         { method: "DELETE" }
       );
 
@@ -149,7 +142,7 @@ function mostrarFerias(lista) {
       if (!motivo) return;
 
       await fetch(
-        `http://localhost:3000/ferias/rejeitar/${btn.dataset.id}`,
+        `${BASE_URL}/ferias/rejeitar/${btn.dataset.id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -161,7 +154,6 @@ function mostrarFerias(lista) {
     };
   });
 }
-
 
 function formatar(d) {
   if (!d) return "-";
@@ -175,10 +167,7 @@ function formatarDataHora(dataISO) {
   return (
     d.toLocaleDateString("pt-BR") +
     " " +
-    d.toLocaleTimeString("pt-BR", {
-      hour: "2-digit",
-      minute: "2-digit"
-    })
+    d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })
   );
 }
 
