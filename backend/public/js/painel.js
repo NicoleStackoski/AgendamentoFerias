@@ -1,5 +1,3 @@
-const BASE_URL = "https://agendamentoferias.onrender.com"; // URL pública do Render
-
 const usuario =
   localStorage.getItem("usuarioLogado") ||
   localStorage.getItem("usuario") ||
@@ -13,14 +11,6 @@ if (!usuario) {
 }
 
 document.querySelector(".user-label").textContent = `Olá, ${usuario}`;
-
-const btnLiberarPortal = document.getElementById("btnLiberarPortal");
-
-if (tipoUsuario === "master" && btnLiberarPortal) {
-  btnLiberarPortal.style.display = "block";
-  btnLiberarPortal.onclick = () =>
-    window.location.href = "liberar-portal.html";
-}
 
 document.getElementById("btnAgendar").onclick = () =>
   window.location.href = "colaborador.html";
@@ -47,7 +37,7 @@ for (let a = 2024; a <= 2035; a++) {
 let listaOriginal = [];
 
 async function carregarFerias() {
-  const res = await fetch(`${BASE_URL}/ferias`);
+  const res = await fetch("/ferias");
   listaOriginal = await res.json();
   aplicarFiltro();
 }
@@ -56,15 +46,17 @@ function aplicarFiltro() {
   let lista = [...listaOriginal];
 
   if (mesFiltro.value !== "") {
-    lista = lista.filter(f =>
-      parseInt(f.inicio.split("-")[1]) === parseInt(mesFiltro.value) + 1
-    );
+    lista = lista.filter(f => {
+      const data = new Date(f.inicio);
+      return data.getMonth() === Number(mesFiltro.value);
+    });
   }
 
   if (anoFiltro.value !== "") {
-    lista = lista.filter(f =>
-      parseInt(f.inicio.split("-")[0]) === parseInt(anoFiltro.value)
-    );
+    lista = lista.filter(f => {
+      const data = new Date(f.inicio);
+      return data.getFullYear() === Number(anoFiltro.value);
+    });
   }
 
   mostrarFerias(lista);
@@ -78,6 +70,7 @@ function mostrarFerias(lista) {
   tbody.innerHTML = "";
 
   lista.forEach((item, index) => {
+
     const statusHTML =
       item.status === "rejeitada"
         ? `<span class="status-rejeitado" data-motivo="${item.motivoRejeicao}">❌ Rejeitada</span>`
@@ -91,9 +84,9 @@ function mostrarFerias(lista) {
         <td>#${index + 1}</td>
         <td>${formatarDataHora(item.dataSolicitacao)}</td>
         <td class="${cargoClasse}">${item.login}</td>
-        <td>${formatar(item.inicio)}</td>
-        <td>${formatar(item.fim)}</td>
-        <td>${(item.cobertura || []).join(", ")}</td>
+        <td>${formatarData(item.inicio)}</td>
+        <td>${formatarData(item.fim)}</td>
+        <td>${item.cobertura || ""}</td>
         <td>${item.observacao || ""}</td>
         <td>${statusHTML}</td>
         <td class="acoes-coluna">
@@ -104,7 +97,9 @@ function mostrarFerias(lista) {
           }
           ${
             podeExcluir
-              ? `<button class="btn-excluir" data-id="${item.id}"><img src="img/lixo.svg"></button>`
+              ? `<button class="btn-excluir" data-id="${item.id}">
+                  <img src="img/lixo.svg">
+                 </button>`
               : ""
           }
         </td>
@@ -127,10 +122,9 @@ function mostrarFerias(lista) {
     btn.onclick = async () => {
       if (!confirm("Excluir férias?")) return;
 
-      await fetch(
-        `${BASE_URL}/ferias/${btn.dataset.id}?usuario=${usuario}`,
-        { method: "DELETE" }
-      );
+      await fetch(`/ferias/${btn.dataset.id}`, {
+        method: "DELETE"
+      });
 
       carregarFerias();
     };
@@ -141,34 +135,37 @@ function mostrarFerias(lista) {
       const motivo = prompt("Motivo da rejeição:");
       if (!motivo) return;
 
-      await fetch(
-        `${BASE_URL}/ferias/rejeitar/${btn.dataset.id}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ motivo })
-        }
-      );
+      await fetch(`/ferias/rejeitar/${btn.dataset.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ motivo })
+      });
 
       carregarFerias();
     };
   });
 }
 
-function formatar(d) {
-  if (!d) return "-";
-  const [y, m, day] = d.split("-");
-  return `${day}/${m}`;
+/* 🔥 FORMATA DATA INICIAL / FINAL */
+function formatarData(data) {
+  if (!data) return "-";
+  const d = new Date(data);
+  return d.toLocaleDateString("pt-BR");
 }
 
+/* 🔥 FORMATA DATA DA SOLICITAÇÃO */
 function formatarDataHora(dataISO) {
   if (!dataISO) return "-";
+
   const d = new Date(dataISO);
-  return (
-    d.toLocaleDateString("pt-BR") +
+
+  return d.toLocaleDateString("pt-BR") +
     " " +
-    d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })
-  );
+    d.toLocaleTimeString("pt-BR", {
+      hour: "2-digit",
+      minute: "2-digit",
+      timeZone: "America/Sao_Paulo"
+    });
 }
 
 carregarFerias();

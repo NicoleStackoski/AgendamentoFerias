@@ -1,28 +1,36 @@
-const { readUsers, writeUsers } = require("../database/jsonDB");
+const pool = require("../database/db");
 
 class User {
-  static findByLogin(login) {
-    const users = readUsers();
-    return users.find(u => u.login === login);
+
+  static async findByLogin(login) {
+    const result = await pool.query(
+      "SELECT * FROM users WHERE nome = $1",
+      [login]
+    );
+    return result.rows[0];
   }
 
-  static getAll() {
-    return readUsers();
+  static async getAll() {
+    const result = await pool.query("SELECT * FROM users");
+    return result.rows;
   }
 
-  static create(data) {
-    const users = readUsers();
-    users.push(data);
-    writeUsers(users);
+  static async create(data) {
+    const { login, senha, tipo, cargo } = data;
+
+    await pool.query(
+      "INSERT INTO users (nome, senha, tipo, cargo) VALUES ($1, $2, $3, $4)",
+      [login, senha, tipo, cargo]
+    );
   }
 
-  static update(login, newData) {
-    const users = readUsers();
-    const index = users.findIndex(u => u.login === login);
-    if (index !== -1) {
-      users[index] = { ...users[index], ...newData };
-      writeUsers(users);
-    }
+  static async update(login, newData) {
+    const { senha } = newData;
+
+    await pool.query(
+      "UPDATE users SET senha = $1 WHERE nome = $2",
+      [senha, login]
+    );
   }
 }
 

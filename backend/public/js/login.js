@@ -1,5 +1,3 @@
-const BASE_URL = "https://agendamentoferias.onrender.com"; // URL pública do Render
-
 document.getElementById("btnEntrar").addEventListener("click", async () => {
   const login = document.getElementById("login").value.trim();
   const senha = document.getElementById("senha").value.trim();
@@ -10,7 +8,8 @@ document.getElementById("btnEntrar").addEventListener("click", async () => {
   }
 
   try {
-    const res = await fetch(`${BASE_URL}/auth/login`, {
+
+    const res = await fetch("/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ login, senha })
@@ -18,12 +17,14 @@ document.getElementById("btnEntrar").addEventListener("click", async () => {
 
     const data = await res.json();
 
+    // 🔹 PRIMEIRO ACESSO
     if (res.status === 401 && data.firstAccess === true) {
+
       const novaSenha = prompt("Primeiro acesso! Cadastre uma senha:");
 
       if (!novaSenha) return;
 
-      await fetch(`${BASE_URL}/auth/set-password`, {
+      await fetch("/auth/set-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ login, senha: novaSenha })
@@ -33,7 +34,9 @@ document.getElementById("btnEntrar").addEventListener("click", async () => {
       return;
     }
 
+    // 🔹 LOGIN OK
     if (res.status === 200) {
+
       localStorage.setItem("usuarioLogado", data.login || login);
       localStorage.setItem("tipoUsuario", data.tipo);
       localStorage.setItem("cargoUsuario", data.cargo || "adm");

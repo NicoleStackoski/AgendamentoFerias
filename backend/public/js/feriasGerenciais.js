@@ -1,6 +1,3 @@
-const BASE_URL = "https://agendamentoferias.onrender.com"; // URL pública do Render
-const API = `${BASE_URL}/ferias-gerenciais`;
-
 const usuarioLogado =
   localStorage.getItem("usuarioLogado") ||
   localStorage.getItem("usuario") ||
@@ -16,13 +13,6 @@ if (!usuarioLogado) {
 const nomeSpan = document.getElementById("nomeUsuario");
 if (nomeSpan) nomeSpan.textContent = usuarioLogado;
 
-const btnLiberarPortal = document.getElementById("btnLiberarPortal");
-if (btnLiberarPortal && tipoUsuario === "master") {
-  btnLiberarPortal.style.display = "block";
-  btnLiberarPortal.onclick = () =>
-    window.location.href = "liberar-portal.html";
-}
-
 const meses = [
   "Janeiro","Fevereiro","Março","Abril","Maio","Junho",
   "Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"
@@ -30,10 +20,10 @@ const meses = [
 
 const mes = document.getElementById("mes");
 const ano = document.getElementById("ano");
-const calendar = document.getElementById("calendar");
-const tabela = document.getElementById("tabela");
 const filtroMes = document.getElementById("filtroMes");
 const filtroAno = document.getElementById("filtroAno");
+const calendar = document.getElementById("calendar");
+const tabela = document.getElementById("tabela");
 const gerente = document.getElementById("gerente");
 const observacao = document.getElementById("observacao");
 const btnSalvar = document.getElementById("salvar");
@@ -42,7 +32,10 @@ let inicio = null;
 let fim = null;
 
 let dropdownValues = {
-  filial: [], canal: [], marca: [], cobertura: []
+  filial: [],
+  canal: [],
+  marca: [],
+  cobertura: []
 };
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -50,6 +43,8 @@ document.addEventListener("DOMContentLoaded", () => {
   initDropdowns();
   carregarTabela();
 });
+
+/* -------------------- SELECTS -------------------- */
 
 function initSelects() {
   mes.innerHTML = `<option value="">mês</option>`;
@@ -75,6 +70,8 @@ function initSelects() {
   filtroAno.onchange = carregarTabela;
 }
 
+/* -------------------- CALENDÁRIO -------------------- */
+
 function resetCalendar() {
   inicio = null;
   fim = null;
@@ -97,8 +94,11 @@ function renderCalendar() {
 
     const data = formatDate(d);
 
-    if (data === inicio || data === fim) div.classList.add("selected");
-    if (inicio && fim && data > inicio && data < fim) div.classList.add("range");
+    if (data === inicio || data === fim)
+      div.classList.add("selected");
+
+    if (inicio && fim && data > inicio && data < fim)
+      div.classList.add("range");
 
     div.onclick = () => selecionarDia(data);
     calendar.appendChild(div);
@@ -110,49 +110,66 @@ function selecionarDia(data) {
     inicio = data;
     fim = null;
   } else if (!fim) {
-    fim = data < inicio ? inicio : data;
-    inicio = data < inicio ? data : inicio;
+    if (data < inicio) {
+      fim = inicio;
+      inicio = data;
+    } else {
+      fim = data;
+    }
   } else {
     inicio = data;
     fim = null;
   }
+
   renderCalendar();
 }
 
-function formatDate(d) {
-  return `${ano.value}-${String(+mes.value + 1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+function formatDate(dia) {
+  return `${ano.value}-${String(+mes.value + 1).padStart(2,"0")}-${String(dia).padStart(2,"0")}`;
 }
+
+/* -------------------- DROPDOWNS -------------------- */
 
 function initDropdowns() {
   document.querySelectorAll(".dropdown").forEach(drop => {
     const btn = drop.querySelector(".dropdown-btn");
-    if (!btn.dataset.label) btn.dataset.label = btn.textContent.trim();
+    const options = drop.querySelector(".dropdown-options");
+
+    if (!btn || !options) return;
+
+    btn.dataset.label = btn.textContent.trim();
 
     btn.onclick = e => {
       e.stopPropagation();
       fecharDropdowns();
-      drop.querySelector(".dropdown-options").style.display = "block";
+      options.style.display = "block";
     };
 
-    drop.querySelectorAll("input").forEach(input => {
+    options.querySelectorAll("input").forEach(input => {
       input.onchange = () => {
-        dropdownValues[drop.dataset.name] =
-          [...drop.querySelectorAll("input:checked")].map(i => i.value);
+        const selecionados = [
+          ...options.querySelectorAll("input:checked")
+        ].map(i => i.value);
+
+        dropdownValues[drop.dataset.name] = selecionados;
 
         btn.textContent =
-          dropdownValues[drop.dataset.name].length
-            ? dropdownValues[drop.dataset.name].join(", ")
+          selecionados.length > 0
+            ? selecionados.join(", ")
             : btn.dataset.label;
       };
     });
   });
 
-  document.onclick = fecharDropdowns;
+  document.addEventListener("click", fecharDropdowns);
 }
 
 function fecharDropdowns() {
-  document.querySelectorAll(".dropdown-options").forEach(d => d.style.display = "none");
+  document.querySelectorAll(".dropdown-options")
+    .forEach(d => d.style.display = "none");
 }
+
+/* -------------------- SALVAR -------------------- */
 
 btnSalvar.onclick = async () => {
   if (!gerente.value || !inicio || !fim) {
@@ -160,7 +177,7 @@ btnSalvar.onclick = async () => {
     return;
   }
 
-  await fetch(API, {
+  await fetch("/ferias-gerenciais", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -178,8 +195,10 @@ btnSalvar.onclick = async () => {
   carregarTabela();
 };
 
+/* -------------------- TABELA -------------------- */
+
 async function carregarTabela() {
-  const res = await fetch(API);
+  const res = await fetch("/ferias-gerenciais");
   let dados = await res.json();
 
   const mesSelecionado = filtroMes.value;
@@ -187,7 +206,7 @@ async function carregarTabela() {
 
   if (mesSelecionado !== "" || anoSelecionado !== "") {
     dados = dados.filter(d => {
-      const [y, m] = d.dataInicio.split("-");
+      const [y, m] = d.data_inicio.split("-");
       return (
         (mesSelecionado === "" || Number(m) - 1 === Number(mesSelecionado)) &&
         (anoSelecionado === "" || y === anoSelecionado)
@@ -200,13 +219,13 @@ async function carregarTabela() {
   dados.forEach(d => {
     tabela.innerHTML += `
       <tr>
-        <td>${d.gerente}</td>
-        <td>${formatar(d.dataInicio)}</td>
-        <td>${formatar(d.dataFim)}</td>
-        <td>${(d.filial || []).join(", ")}</td>
-        <td>${(d.marca || []).join(", ")}</td>
-        <td>${(d.canal || []).join(", ")}</td>
-        <td>${(d.cobertura || []).join(", ")}</td>
+        <td>${d.nome_gerente}</td>
+        <td>${formatarData(d.data_inicio)}</td>
+        <td>${formatarData(d.data_fim)}</td>
+        <td>${d.filial || ""}</td>
+        <td>${d.marca || ""}</td>
+        <td>${d.canal || ""}</td>
+        <td>${d.cobertura || ""}</td>
         <td>${d.observacao || ""}</td>
         <td>
           <button class="btn-trash" data-id="${d.id}">🗑</button>
@@ -216,26 +235,31 @@ async function carregarTabela() {
   });
 }
 
+/* -------------------- EXCLUIR -------------------- */
+
 document.addEventListener("click", async e => {
   if (!e.target.classList.contains("btn-trash")) return;
 
   const id = e.target.dataset.id;
-  if (!id) return alert("ID não encontrado.");
-
   if (!confirm("Deseja excluir este registro?")) return;
 
-  const res = await fetch(`${API}/${id}`, { method: "DELETE" });
-
-  if (!res.ok) {
-    alert("Erro ao excluir");
-    return;
-  }
+  await fetch(`/ferias-gerenciais/${id}`, {
+    method: "DELETE"
+  });
 
   carregarTabela();
 });
 
-function formatar(data) {
-  if (!data) return "";
-  const [y,m,d] = data.split("-");
-  return `${d}/${m}/${y}`;
+/* -------------------- FORMATAÇÃO -------------------- */
+
+function formatarData(dataISO) {
+  if (!dataISO) return "";
+
+  const data = new Date(dataISO);
+
+  const dia = String(data.getDate()).padStart(2, "0");
+  const mes = String(data.getMonth() + 1).padStart(2, "0");
+  const ano = data.getFullYear();
+
+  return `${dia}/${mes}/${ano}`;
 }

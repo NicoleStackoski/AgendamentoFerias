@@ -1,24 +1,27 @@
-const {
-  readFeriasGerenciais,
-  writeFeriasGerenciais
-} = require("../database/jsonDB");
+const pool = require("../database/db");
 
-const { v4: uuid } = require("uuid");
 
-//Listar
-function listarFeriasGerenciais(req, res) {
+// 🔹 LISTAR
+async function listarFeriasGerenciais(req, res) {
   try {
-    const dados = readFeriasGerenciais();
-    res.json(dados);
+
+    const result = await pool.query(
+      "SELECT * FROM ferias_gerenciais ORDER BY criado_em DESC"
+    );
+
+    res.json(result.rows);
+
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Erro ao listar férias gerenciais" });
   }
 }
 
-//Criar
-function criarFeriasGerenciais(req, res) {
+
+// 🔹 CRIAR
+async function criarFeriasGerenciais(req, res) {
   try {
+
     const {
       gerente,
       dataInicio,
@@ -36,46 +39,50 @@ function criarFeriasGerenciais(req, res) {
       });
     }
 
-    const dados = readFeriasGerenciais();
+    await pool.query(
+      `INSERT INTO ferias_gerenciais 
+      (nome_gerente, data_inicio, data_fim, filial, marca, canal, cobertura, observacao)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+      [
+        gerente,
+        dataInicio,
+        dataFim,
+        Array.isArray(filial) ? filial.join(", ") : filial,
+        Array.isArray(marca) ? marca.join(", ") : marca,
+        Array.isArray(canal) ? canal.join(", ") : canal,
+        Array.isArray(cobertura) ? cobertura.join(", ") : cobertura,
+        observacao
+      ]
+    );
 
-    const novoRegistro = {
-      id: uuid(),
-      gerente,
-      dataInicio,
-      dataFim,
-      filial: Array.isArray(filial) ? filial : [filial],
-      canal: Array.isArray(canal) ? canal : [canal],
-      marca: Array.isArray(marca) ? marca : [marca],
-      cobertura: Array.isArray(cobertura) ? cobertura : [cobertura],
-      observacao
-    };
+    res.status(201).json({ message: "Férias gerenciais cadastradas com sucesso!" });
 
-    dados.push(novoRegistro);
-    writeFeriasGerenciais(dados);
-
-    res.status(201).json(novoRegistro);
   } catch (err) {
     console.error("ERRO AO SALVAR FÉRIAS GERENCIAIS:", err);
     res.status(500).json({ error: "Erro ao salvar férias gerenciais" });
   }
 }
 
-//Excluir
 
-function excluirFeriasGerenciais(req, res) {
+// 🔹 EXCLUIR
+async function excluirFeriasGerenciais(req, res) {
   try {
+
     const { id } = req.params;
 
-    let dados = readFeriasGerenciais();
-    dados = dados.filter(item => item.id !== id);
+    await pool.query(
+      "DELETE FROM ferias_gerenciais WHERE id = $1",
+      [id]
+    );
 
-    writeFeriasGerenciais(dados);
     res.sendStatus(204);
+
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Erro ao excluir férias gerenciais" });
   }
 }
+
 
 module.exports = {
   listarFeriasGerenciais,

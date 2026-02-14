@@ -5,47 +5,36 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Painel de Férias</title>
 
-  <link rel="stylesheet" href="css/painel.css">
+  <link rel="stylesheet" href="/css/painel.css">
 </head>
 
 <body>
   <div class="container">
 
-
     <aside class="sidebar">
       <p class="user-label">Olá, usuário</p>
 
-      <button class="menu-btn" id="btnAgendar">
+
+      <button class="menu-btn" id="btnAgendar" onclick="location.href='/index.html'">
         Agendar férias
       </button>
 
-      <button class="menu-btn" id="btnPainel">
+      <button class="menu-btn" id="btnPainel" onclick="location.href='/painel-ferias.html'">
         Ver painel de férias
       </button>
 
-      <button
-        class="menu-btn"
-        id="btnFeriasGerencial"
-        onclick="location.href='ferias-gerenciais.html'"
-      >
+      <button class="menu-btn" id="btnFeriasGerencial" onclick="location.href='/ferias-gerenciais.html'">
         Férias Gerencial
       </button>
 
-
-      <button
-        class="menu-btn"
-        id="btnLiberarPortal"
-        style="display: none;"
-      >
+      <button class="menu-btn" id="btnLiberarPortal" style="display: none;">
         Liberar Portal
       </button>
     </aside>
 
-
     <main class="main-content">
       <h2 class="page-title">Ver painel de férias</h2>
 
-  
       <div class="filtros">
         <select id="mesFiltro">
           <option value="">mês</option>
@@ -55,7 +44,6 @@
           <option value="">ano</option>
         </select>
       </div>
-
 
       <table class="tabela">
         <thead>
@@ -87,7 +75,7 @@
     </div>
   </div>
 
-
-  <script src="js/painel.js"></script>
+  <!-- Caminho absoluto a partir da raiz do public -->
+  <script src="/js/painel.js"></script>
 </body>
 </html>

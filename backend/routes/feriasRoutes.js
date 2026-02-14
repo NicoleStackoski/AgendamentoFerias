@@ -1,142 +1,139 @@
 const express = require("express");
 const router = express.Router();
-const {
-  readFerias,
-  writeFerias,
-  readUsers
-} = require("../database/jsonDB");
-const crypto = require("crypto");
+const pool = require("../database/db");
 
-router.get("/", (req, res) => {
-  const ferias = readFerias();
-  const users = readUsers();
+// 🔹 LISTAR FÉRIAS
+router.get("/", async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT 
+        id,
+        usuario_nome,
+        cargo,
+        data_inicio,
+        data_fim,
+        cobertura,
+        observacao,
+        status,
+        motivo_rejeicao,
+        data_solicitacao
+      FROM ferias
+      ORDER BY data_solicitacao ASC
+    `);
 
-  let alterou = false;
+    const dadosFormatados = result.rows.map(f => ({
+      id: f.id,
+      login: f.usuario_nome,
+      cargo: f.cargo,
+      inicio: f.data_inicio,
+      fim: f.data_fim,
+      cobertura: f.cobertura ? f.cobertura.split(", ") : [],
+      observacao: f.observacao,
+      status: f.status,
+      motivoRejeicao: f.motivo_rejeicao,
+      dataSolicitacao: f.data_solicitacao
+    }));
 
-  ferias.forEach(f => {
+    res.json(dadosFormatados);
 
-    if (!f.dataSolicitacao) {
-      f.dataSolicitacao = new Date().toISOString();
-      alterou = true;
-    }
-
-    
-    const loginFerias =
-      typeof f.login === "string"
-        ? f.login.toLowerCase().trim()
-        : null;
-
-    
-    const user = loginFerias
-      ? users.find(
-          u => u.login.toLowerCase().trim() === loginFerias
-        )
-      : null;
-
-    
-    if (!f.cargo) {
-      f.cargo = user?.cargo || "adm";
-      alterou = true;
-    }
-  });
-
-  if (alterou) {
-    writeFerias(ferias);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Erro ao buscar férias" });
   }
-
-  ferias.sort(
-    (a, b) => new Date(a.dataSolicitacao) - new Date(b.dataSolicitacao)
-  );
-
-  res.json(ferias);
 });
 
-// Cadastrar novas férias
-router.post("/", (req, res) => {
-  const ferias = readFerias();
+// 🔹 CADASTRAR FÉRIAS
+router.post("/", async (req, res) => {
+  try {
+    const {
+      login,
+      cargo,
+      inicio,
+      fim,
+      cobertura,
+      observacao
+    } = req.body;
 
-  const novo = {
-    id: crypto.randomUUID(),
-    login: req.body.login, 
-    cargo: req.body.cargo || "adm", 
-    inicio: req.body.inicio,
-    fim: req.body.fim,
-    cobertura: req.body.cobertura || [],
-    observacao: req.body.observacao || "",
-    status: "pendente",
-    motivoRejeicao: "",
-    dataSolicitacao: new Date().toISOString()
-  };
+    const coberturaString = Array.isArray(cobertura)
+      ? cobertura.join(", ")
+      : cobertura || "";
 
-  ferias.push(novo);
-  writeFerias(ferias);
+    const result = await pool.query(
+      `INSERT INTO ferias 
+      (usuario_nome, cargo, data_inicio, data_fim, cobertura, observacao)
+      VALUES ($1, $2, $3, $4, $5, $6)
+      RETURNING *`,
+      [
+        login,
+        cargo || "adm",
+        inicio,
+        fim,
+        coberturaString,
+        observacao || ""
+      ]
+    );
 
-  res.status(201).json({
-    message: "Férias cadastradas com sucesso!",
-    data: novo
-  });
+    const f = result.rows[0];
+
+    res.status(201).json({
+      message: "Férias cadastradas com sucesso!",
+      data: {
+        id: f.id,
+        login: f.usuario_nome,
+        cargo: f.cargo,
+        inicio: f.data_inicio,
+        fim: f.data_fim,
+        cobertura: f.cobertura ? f.cobertura.split(", ") : [],
+        observacao: f.observacao,
+        status: f.status,
+        motivoRejeicao: f.motivo_rejeicao,
+        dataSolicitacao: f.data_solicitacao
+      }
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Erro ao cadastrar férias" });
+  }
 });
 
-// Login Master rejeita as férias
-router.put("/rejeitar/:id", (req, res) => {
-  const { id } = req.params;
-  const { motivo } = req.body;
+// 🔹 REJEITAR FÉRIAS
+router.put("/rejeitar/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { motivo } = req.body;
 
-  const ferias = readFerias();
-  const registro = ferias.find(f => f.id === id);
+    await pool.query(
+      `UPDATE ferias 
+       SET status = 'rejeitada', motivo_rejeicao = $1 
+       WHERE id = $2`,
+      [motivo || "Sem motivo informado", id]
+    );
 
-  if (!registro) {
-    return res.status(404).json({
-      error: "Registro de férias não encontrado."
-    });
+    res.json({ message: "Férias rejeitadas com sucesso!" });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Erro ao rejeitar férias" });
   }
-
-  registro.status = "rejeitada";
-  registro.motivoRejeicao = motivo || "Sem motivo informado";
-
-  writeFerias(ferias);
-
-  res.json({
-    message: "Férias rejeitadas com sucesso!",
-    data: registro
-  });
 });
 
-// Excluir férias users
-router.delete("/:id", (req, res) => {
-  const { id } = req.params;
-  const { usuario } = req.query;
+// 🔹 EXCLUIR FÉRIAS
+router.delete("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
 
-  if (!usuario) {
-    return res.status(400).json({
-      error: "Usuário não informado."
-    });
+    await pool.query(
+      "DELETE FROM ferias WHERE id = $1",
+      [id]
+    );
+
+    res.json({ message: "Férias excluídas com sucesso!" });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Erro ao excluir férias" });
   }
-
-  const ferias = readFerias();
-  const registro = ferias.find(f => f.id === id);
-
-  if (!registro) {
-    return res.status(404).json({
-      error: "Registro de férias não encontrado."
-    });
-  }
-
-  if (
-    !registro.login ||
-    registro.login.toLowerCase() !== usuario.toLowerCase()
-  ) {
-    return res.status(403).json({
-      error: "Sem permissão para excluir estas férias."
-    });
-  }
-
-  const filtrado = ferias.filter(f => f.id !== id);
-  writeFerias(filtrado);
-
-  res.json({
-    message: "Férias excluídas com sucesso!"
-  });
 });
 
 module.exports = router;

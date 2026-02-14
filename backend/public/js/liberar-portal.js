@@ -1,3 +1,4 @@
+const BASE_URL = "https://agendamentoferias.onrender.com";
 
 const usuario =
   localStorage.getItem("usuarioLogado") ||
