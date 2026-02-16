@@ -37,6 +37,14 @@ if (tipoUsuario === "master" && btnLiberarPortal) {
     window.location.href = "liberar-portal.html";
 }
 
+/* 🔥 FUNÇÃO SEGURA PARA FORMATAR DATA (SEM UTC) */
+function formatarParaBanco(data) {
+  const ano = data.getFullYear();
+  const mes = String(data.getMonth() + 1).padStart(2, "0");
+  const dia = String(data.getDate()).padStart(2, "0");
+  return `${ano}-${mes}-${dia}`;
+}
+
 // 🔹 Carrega usuários para cobertura
 async function carregarUsuarios() {
   const res = await fetch("/users");
@@ -97,7 +105,7 @@ mesSelect.onchange = gerarCalendario;
 anoSelect.onchange = gerarCalendario;
 
 function gerarCalendario() {
-  if (!mesSelect.value || !anoSelect.value) return;
+  if (mesSelect.value === "" || anoSelect.value === "") return;
 
   mesAtual = +mesSelect.value;
   anoAtual = +anoSelect.value;
@@ -131,6 +139,8 @@ function gerarCalendario() {
 
 function marcarUltimaSemana() {
   const linhas = document.querySelectorAll("#calendarBody tr");
+  if (linhas.length === 0) return;
+
   linhas[linhas.length - 1]
     .querySelectorAll("td")
     .forEach(td => td.textContent && td.classList.add("ultima-semana"));
@@ -178,7 +188,7 @@ function limparSelecao() {
     .forEach(td => td.classList.remove("selecionado"));
 }
 
-// 🔹 Salvar férias
+// 🔹 Salvar férias (CORRIGIDO)
 document.getElementById("btnSalvar").onclick = async () => {
   if (!dataInicio || !dataFim)
     return alert("Selecione o período.");
@@ -189,8 +199,8 @@ document.getElementById("btnSalvar").onclick = async () => {
     body: JSON.stringify({
       login: usuarioLogado,
       cargo: cargoUsuario,
-      inicio: dataInicio.toISOString().split("T")[0],
-      fim: dataFim.toISOString().split("T")[0],
+      inicio: formatarParaBanco(dataInicio),
+      fim: formatarParaBanco(dataFim),
       cobertura: selecionados,
       observacao: document.getElementById("observacao").value
     })

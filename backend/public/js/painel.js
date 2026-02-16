@@ -42,20 +42,30 @@ async function carregarFerias() {
   aplicarFiltro();
 }
 
+/* 🔥 FUNÇÃO PARA LIMPAR DATA ISO */
+function limparData(data) {
+  if (!data) return null;
+  return data.split("T")[0]; // remove horário se existir
+}
+
 function aplicarFiltro() {
   let lista = [...listaOriginal];
 
   if (mesFiltro.value !== "") {
     lista = lista.filter(f => {
-      const data = new Date(f.inicio);
-      return data.getMonth() === Number(mesFiltro.value);
+      if (!f.inicio) return false;
+      const dataLimpa = limparData(f.inicio);
+      const [, mes] = dataLimpa.split("-");
+      return Number(mes) - 1 === Number(mesFiltro.value);
     });
   }
 
   if (anoFiltro.value !== "") {
     lista = lista.filter(f => {
-      const data = new Date(f.inicio);
-      return data.getFullYear() === Number(anoFiltro.value);
+      if (!f.inicio) return false;
+      const dataLimpa = limparData(f.inicio);
+      const [ano] = dataLimpa.split("-");
+      return Number(ano) === Number(anoFiltro.value);
     });
   }
 
@@ -146,14 +156,16 @@ function mostrarFerias(lista) {
   });
 }
 
-/* 🔥 FORMATA DATA INICIAL / FINAL */
+/* 🔥 FORMATA DATA INICIAL / FINAL (BLINDADO CONTRA ISO) */
 function formatarData(data) {
   if (!data) return "-";
-  const d = new Date(data);
-  return d.toLocaleDateString("pt-BR");
+
+  const dataLimpa = limparData(data);
+  const [ano, mes, dia] = dataLimpa.split("-");
+  return `${dia}/${mes}/${ano}`;
 }
 
-/* 🔥 FORMATA DATA DA SOLICITAÇÃO */
+/* 🔥 FORMATA DATA DA SOLICITAÇÃO (TIMESTAMP OK) */
 function formatarDataHora(dataISO) {
   if (!dataISO) return "-";
 
